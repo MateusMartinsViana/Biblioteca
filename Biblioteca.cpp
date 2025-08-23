@@ -50,8 +50,6 @@ int main(){
                     if (cad[i].cod_catalogacao == cad[j].cod_catalogacao) {
                         repetido = true;
                         cout << "Este livro já está cadastrado!" << endl;
-                        system("pause");
-                        system("cls");
                     }
                 }
 
@@ -68,8 +66,6 @@ int main(){
                         cin >> cad[i].num_paginas;
                         cin.ignore();
                         cout << "Livro cadastrado com sucesso!" << endl;
-                        system("pause");
-                        system("cls");
 
                         cad[i].emp.dt_emprestimo = "";
                         cad[i].emp.dt_devolucao = "";
@@ -79,11 +75,13 @@ int main(){
                         i++;
                     }
 
+                system("pause");
+                system("cls");
                 cout << "Deseja cadastrar outro livro? ";
                 getline (cin, continuar);
                 system("cls");
 
-            } while (continuar == "sim") ;
+            } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
             break;
 
@@ -100,7 +98,7 @@ int main(){
                     if (cod_emprestimo == cad[j].cod_catalogacao) {
                         encontrado = true;
 
-                        if (cad[j].emp.usuario == "") { // Usuário igual a vazio
+                        if (cad[j].emp.usuario == "") {
                             cout << "Dt. Empréstimo: ";
                             getline(cin, cad[j].emp.dt_emprestimo);
                             cout << "Dt. Devolução: ";
@@ -118,14 +116,14 @@ int main(){
                     if (encontrado == false) {
                         cout << "Livro não encontrado." << endl;
                     }
-                
+
                 system("pause");
                 system("cls");
                 cout << "Deseja realizar outro emprestimo? ";
                 getline (cin, continuar);
                 system("cls");
 
-            } while (continuar == "sim") ;
+            } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
             break;
 
@@ -142,7 +140,7 @@ int main(){
                     if (cod_devolucao == cad[j].cod_catalogacao) {
                         encontrado = true;
 
-                        if (cad[j].emp.usuario != "") { // Usuário diferente de vazio
+                        if (cad[j].emp.usuario != "") {
                         cad[j].emp.dt_emprestimo = "";
                         cad[j].emp.dt_devolucao = "";
                         cad[j].emp.usuario = "";
@@ -163,7 +161,7 @@ int main(){
                 getline (cin, continuar);
                 system("cls");
 
-                } while (continuar == "sim") ;
+            } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
                 break;
 
@@ -180,7 +178,7 @@ int main(){
                     if (cod_consulta == cad[j].cod_catalogacao) {
                         encontrado = true;
 
-                        if (cad[j].emp.usuario == "") { // Usuário igual a vazio
+                        if (cad[j].emp.usuario == "") {
                             cout << "Status: Disponivel" << endl;
                             cout << "Código de catalogação: " << cad[j].cod_catalogacao << endl;
                             cout << "Área: " << cad[j].area << endl;
@@ -200,12 +198,13 @@ int main(){
                     if (encontrado == false) {
                         cout << "Livro não encontrado." << endl;
                     }
-
+                system("pause");
+                system("cls");
                 cout << "Deseja consultar outro livro? ";
                 getline (cin, continuar);
                 system("cls");
 
-            } while (continuar == "sim") ;
+            } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
             break;
 
@@ -216,7 +215,7 @@ int main(){
                 
                 cout << "────── LIVROS DISPONÍVEIS ──────" << endl;
                 for (j=0; j < livros_cadastrados; j++) {
-                    if (cad[j].emp.usuario == "") { // Usuário igual a vazio
+                    if (cad[j].emp.usuario == "") {
                         encontrado = true;
                         cout << "Código de catalogação: " << cad[j].cod_catalogacao << endl;
                         cout << "Área: " << cad[j].area << endl;
@@ -235,7 +234,7 @@ int main(){
                 getline (cin, continuar);
                 system("cls");
 
-            } while (continuar == "sim") ;
+            } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
             break;
 
@@ -261,8 +260,8 @@ int main(){
                         cout << "Digite a área para a busca: ";
                         getline (cin, filtro_area);
                         system("cls");
-                        cout << "RESULTADOS DA BUSCA POR ÁREA 🔍︎" << endl;
-                        cout << "────────────────────────────────" << endl;
+                        cout << "RESULTADOS DA BUSCA POR ÁREA" << endl;
+                        cout << "─────────────────────────────" << endl;
 
                         for (j=0; j < livros_cadastrados; j++) {
                             if (filtro_area == cad[j].area) {
@@ -273,7 +272,7 @@ int main(){
                                 cout << "Autor(es): " << cad[j].autor << endl;
                                 cout << "Editora: " << cad[j].editora << endl;
                                 cout << "Nº de páginas: " << cad[j].num_paginas << endl;
-                                cout << "────────────────────────────────" << endl; 
+                                cout << "─────────────────────────────" << endl;
                             }
                         }
                             if (encontrado == false) {
@@ -284,7 +283,7 @@ int main(){
                         getline (cin, continuar);
                         system("cls");
                         
-                    } while (continuar == "sim") ;
+                    } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
                     break;
 
@@ -297,8 +296,8 @@ int main(){
                         cout << "Digite o autor para a busca: ";
                         getline (cin, filtro_autor);
                         system("cls");
-                        cout << "RESULTADOS DA BUSCA POR AUTOR 🔍︎" << endl;
-                        cout << "────────────────────────────────" << endl;
+                        cout << "RESULTADOS DA BUSCA POR AUTOR" << endl;
+                        cout << "──────────────────────────────" << endl;
                         
                         for (j=0; j < livros_cadastrados; j++) {
                             if (filtro_autor == cad[j].autor) {
@@ -310,7 +309,7 @@ int main(){
                                 cout << "Autor(es): " << cad[j].autor << endl;
                                 cout << "Editora: " << cad[j].editora << endl;
                                 cout << "Nº de páginas: " << cad[j].num_paginas << endl;
-                                cout << "────────────────────────────────" << endl; 
+                                cout << "──────────────────────────────" << endl;
                             }
                         }
                             if (encontrado == false) {
@@ -321,7 +320,7 @@ int main(){
                         getline (cin, continuar);
                         system("cls");
 
-                    } while (continuar == "sim") ;
+                    } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
                     break;
 
@@ -334,7 +333,7 @@ int main(){
                         cout << "Digite a editora para a busca: ";
                         getline (cin, filtro_editora);
                         system("cls");
-                        cout << "RESULTADOS DA BUSCA POR EDITORA 🔍︎" << endl;
+                        cout << "RESULTADOS DA BUSCA POR EDITORA" << endl;
                         cout << "────────────────────────────────" << endl;
                         
                         for (j=0; j < livros_cadastrados; j++) {
@@ -347,7 +346,7 @@ int main(){
                                 cout << "Autor(es): " << cad[j].autor << endl;
                                 cout << "Editora: " << cad[j].editora << endl;
                                 cout << "Nº de páginas: " << cad[j].num_paginas << endl;
-                                cout << "────────────────────────────────" << endl; 
+                                cout << "────────────────────────────────" << endl;
                             }
                         }
                             if (encontrado == false) {
@@ -358,10 +357,9 @@ int main(){
                         getline (cin, continuar);
                         system("cls");
 
-                    } while (continuar == "sim") ;
+                    } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
                     break;
-
                 } 
 
             } while (opcao_filtro != 4) ;
