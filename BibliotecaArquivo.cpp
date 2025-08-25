@@ -1,11 +1,12 @@
 #include <iostream>
 #include <cstdio>
 #include <limits>
+#include <cstring>
 #include <windows.h>
 using namespace std;
 int main(){
     SetConsoleOutputCP(CP_UTF8);
-    FILE *Biblioteca;
+    FILE *Biblioteca, *BibliotecaAux;
     struct emprestimo {
         char dt_emprestimo[10], dt_devolucao[10], usuario[100];
     } ;
@@ -16,9 +17,12 @@ int main(){
     } ;
     struct cadastro cad;
 
-    int opcao;
+    int opcao, opcao_filtro, livros_cadastrados, busca, pos, i, j;
     char continuar;
-    bool repetido;
+    bool repetido, encontrado;
+    
+    i=0;
+    livros_cadastrados=0;
 
     do {
         cout << "MENU DE OPÇÕES DA BIBLIOTECA" << endl;
@@ -39,16 +43,16 @@ int main(){
    
         switch (opcao) {
             case 1:
-                Biblioteca = fopen("Biblioteca.dat", "ab+"); 
+            Biblioteca = fopen("Biblioteca.dat", "ab+"); 
             if (Biblioteca == NULL)
                 cout << "Erro ao abrir o arquivo!";
             else {
-                cout << "Deseja iniciar o cadastro do livro (S/N): ";
+                cout << "Deseja iniciar o cadastro do livro? ";
                 cin >> continuar;
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 system("cls");
 
-                while (continuar == 'S') {
+                while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's') {
                     cout << "────── CADASTRO ──────" << endl;
                     cout << "Código de catalogação: ";
                     cin >> cad.cod_catalogacao;
@@ -84,6 +88,13 @@ int main(){
                         cin.ignore(numeric_limits<streamsize>::max(), '\n');
                         cout << "Livro cadastrado com sucesso!" << endl;  
                         
+                        strcpy(cad.emp.dt_emprestimo, "");
+                        strcpy(cad.emp.dt_devolucao, "");
+                        strcpy(cad.emp.usuario, "");
+                        
+                        i++;
+                        livros_cadastrados++;
+                        
                     if (fwrite(&cad, sizeof(struct cadastro), 1, Biblioteca) == 1) { 
                         cout << "Registro gravado com sucesso!";
                         cin.get();       
@@ -93,13 +104,121 @@ int main(){
                     }          
                 }    
                 system("cls");
-                cout << "Deseja cadastrar outro livro (S/N): ";
+                cout << "Deseja cadastrar outro livro? ";
                 cin >> continuar;
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 system("cls");
                 }
             }
                 fclose(Biblioteca); 
+
+            break;
+
+            case 2:
+                do {
+                    encontrado = false;
+                    cout << "────── ALTERAÇÃO ──────" << endl;
+                    cout << "Digite o código do livro para alteração: ";
+                    cin >> busca;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    Biblioteca = fopen("Biblioteca.dat","rb+");
+                    pos = -1;
+                    while (!feof(Biblioteca)) {
+                        fread (&cad, sizeof(struct cadastro), 1, Biblioteca);
+                        pos++;
+                        if (busca == cad.cod_catalogacao) {
+                            encontrado = true;
+                            fseek (Biblioteca, sizeof(struct cadastro)*pos, SEEK_SET); // posiciona o cursor no começo do arquivo 
+                            cout << "Área: ";
+                            cin.get(cad.area, 99);
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            cout << "Título: ";
+                            cin.get(cad.titulo, 99);
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            cout << "Autor(es): ";
+                            cin.get(cad.autor, 99);
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            cout << "Editora: ";
+                            cin.get(cad.editora, 99);
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            cout << "Nº de páginas: ";
+                            cin >> cad.num_paginas;
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            cout << "Livro alterado com sucesso!" << endl; 
+                            fwrite (&cad, sizeof(struct cadastro), 1, Biblioteca);
+                            break;
+                        } 
+                    }
+                    if (!encontrado) {
+                        cout << "Livro não encontrado." << endl;
+                    }
+
+                    fclose(Biblioteca);
+                    cout << "Deseja realizar outra alteração? ";
+                    cin >> continuar;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    system("cls");
+                       
+                } while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's');
+
+            break;
+
+            case 3:
+                do {
+                    cout << "────── EXCLUSÃO ──────" << endl;
+                    cout << "Digite o código do livro para exclusão: ";
+                    cin >> busca;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    BibliotecaAux = fopen ("Biblioteca.aux","wb");
+                    Biblioteca = fopen ("Biblioteca.dat","rb");
+                    fread (&cad, sizeof(struct cadastro), 1, Biblioteca);
+                    while (!feof(Biblioteca)) {
+                        if (busca != cad.cod_catalogacao) { // código diferente da busca copia no arquivo auxiliar
+                            fwrite (&cad, sizeof(struct cadastro), 1, BibliotecaAux);
+                        }
+                    fread (&cad, sizeof(struct cadastro), 1, Biblioteca);
+                    }
+
+                    fclose (Biblioteca);
+                    fclose (BibliotecaAux);
+                    remove("Biblioteca.dat"); // remove o arquivo original
+                    rename ("Biblioteca.aux","Biblioteca.dat"); // renomeia o arquivo auxiliar para o nome do arquivo original
+
+                    cout << "Livro excluido com sucesso!" << endl;
+                    cout << "Deseja realizar outra exclusão? ";
+                    cin >> continuar;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    system("cls");
+
+                } while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's');
+
+            break;
+
+            case 4:
+                do {
+                    
+                } while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's');
+
+            break;
+
+            case 5:
+                do {
+                    
+                } while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's');
+
+            break;
+
+            case 6:
+                do {
+                    
+                } while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's');
+
+            break;
+
+            case 7:
+                do {
+                    
+                } while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's');
 
             break;
 
