@@ -257,4 +257,5 @@ int main(){
         }
             
     } while (opcao != 9) ;
+    // finalizou 
 }   
