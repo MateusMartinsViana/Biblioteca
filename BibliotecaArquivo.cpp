@@ -17,9 +17,9 @@ int main(){
     } ;
     struct cadastro cad;
 
-    int opcao, opcao_filtro, livros_cadastrados, busca, pos, i, j;
-    char continuar;
-    bool repetido, encontrado;
+    int opcao, livros_cadastrados, busca, pos, i;
+    string continuar;
+    bool repetido, encontrado, disponivel;
     
     i=0;
     livros_cadastrados=0;
@@ -52,7 +52,7 @@ int main(){
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 system("cls");
 
-                while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's') {
+                while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s") {
                     cout << "────── CADASTRO ──────" << endl;
                     cout << "Código de catalogação: ";
                     cin >> cad.cod_catalogacao;
@@ -70,7 +70,7 @@ int main(){
                             break;
                         }
                     }
-                    if (!repetido) { 
+                    if (repetido == false) { 
                         cout << "Área: ";
                         cin.get(cad.area, 99);
                         cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -149,7 +149,7 @@ int main(){
                             break;
                         } 
                     }
-                    if (!encontrado) {
+                    if (encontrado == false) {
                         cout << "Livro não encontrado." << endl;
                     }
 
@@ -159,7 +159,7 @@ int main(){
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     system("cls");
                        
-                } while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's');
+                } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
             break;
 
@@ -190,35 +190,117 @@ int main(){
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     system("cls");
 
-                } while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's');
+                } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
             break;
 
             case 4:
                 do {
+                    encontrado = false;
+                    disponivel = false;
+                    cout << "────── EMPRÉSTIMO ──────" << endl;
+                    cout << "Digite o código do livro para empréstimo: ";
+                    cin >> busca;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    Biblioteca = fopen ("Biblioteca.dat","rb+");
+                    pos = -1;
+                    while (!feof(Biblioteca)) {
+                        fread (&cad, sizeof(struct cadastro), 1, Biblioteca);
+                        pos++;
+                        if (busca == cad.cod_catalogacao ) {
+                            encontrado = true;
+                            if (strcmp(cad.emp.usuario, "") == 0) { // verifica se o campo usuário está vazio
+                                disponivel = true;
+                                fseek (Biblioteca, sizeof(struct cadastro)*pos, SEEK_SET); // posiciona o cursor no começo do arquivo 
+                                cout << "Dt. Empréstimo: ";
+                                cin.get(cad.emp.dt_emprestimo, 9);
+                                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                                cout << "Dt. Devolução: ";
+                                cin.get(cad.emp.dt_devolucao, 9);
+                                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                                cout << "Usuário: ";
+                                cin.get(cad.emp.usuario, 99);
+                                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                                cout << "Empréstimo realizado com sucesso!" << endl;
+                                fwrite (&cad, sizeof(struct cadastro), 1, Biblioteca);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (encontrado == false) {
+                        cout << "Livro não encontrado." << endl;
+                    }
+                    else if (disponivel == false) {
+                        cout << "Livro indisponível para empréstimo." << endl;
+                    }
+
+                    fclose (Biblioteca);
+                    cout << "Deseja realizar outro empréstimo? ";
+                    cin >> continuar;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    system("cls");
                     
-                } while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's');
+                } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
             break;
 
             case 5:
                 do {
+                    encontrado = false;
+                    disponivel = false;
+                    cout << "────── DEVOLUÇÃO ──────" << endl;
+                    cout << "Digite o código do livro para devolução: ";
+                    cin >> busca;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    Biblioteca = fopen ("Biblioteca.dat","rb+");
+                    pos = -1;
+                    while (!feof(Biblioteca)) {
+                        fread (&cad, sizeof(struct cadastro), 1, Biblioteca);
+                        pos++;
+                        if (busca == cad.cod_catalogacao ) {
+                            encontrado = true;
+                            if (strcmp(cad.emp.usuario, "") != 0) { // verifica se o campo usuário não esta vazio
+                                disponivel = true;  
+                                fseek (Biblioteca, sizeof(struct cadastro)*pos, SEEK_SET); // posiciona o cursor no começo do arquivo  
+                                strcpy(cad.emp.dt_emprestimo, ""); // limpa os campos de empréstimo
+                                strcpy(cad.emp.dt_devolucao, "");
+                                strcpy(cad.emp.usuario, "");
+                                cout << "Devolução realizada com sucesso!" << endl;
+                                fwrite (&cad, sizeof(struct cadastro), 1, Biblioteca);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (encontrado == false) {
+                        cout << "Livro não encontrado." << endl;
+                    }
+                    else if (disponivel == false) {
+                        cout << "Livro disponível para empréstimo." << endl; 
+                    }
+
+                    fclose (Biblioteca);
+                    cout << "Deseja realizar outra devolução? ";
+                    cin >> continuar;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    system("cls");
                     
-                } while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's');
+                } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
             break;
 
             case 6:
                 do {
                     
-                } while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's');
+                } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
             break;
 
             case 7:
                 do {
                     
-                } while (continuar == 'Sim' || continuar == 'sim' || continuar == 'SIM' || continuar == 'S' || continuar == 's');
+                } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
             break;
 
@@ -234,7 +316,7 @@ int main(){
                             cout << "Autor(es): " << cad.autor << endl;
                             cout << "Editora: " << cad.editora << endl;
                             cout << "Nº de páginas: " << cad.num_paginas << endl;   
-                            cout << "────────────────────────────────" << endl;  
+                            cout << "──────────────────────────────────────" << endl;  
                             fread (&cad, sizeof(struct cadastro), 1, Biblioteca); 
                     }
 
