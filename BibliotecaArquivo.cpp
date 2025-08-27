@@ -1,3 +1,4 @@
+// Biblioteca de Mateus Martins Viana
 #include <iostream>
 #include <cstdio>
 #include <limits>
@@ -62,9 +63,9 @@ int main(){
 
                     fseek(Biblioteca, 0, SEEK_SET); // vai pro início do arquivo
                     struct cadastro temp; // struct temporária
-                    while (!feof(Biblioteca)) {
+                    while (!feof(Biblioteca)) { // enquanto não chegar ao final do arquivo
                         fread(&temp, sizeof(struct cadastro), 1, Biblioteca);
-                        if (temp.cod_catalogacao == cad.cod_catalogacao) {
+                        if (temp.cod_catalogacao == cad.cod_catalogacao) { //compara o código da struct temporária com o código da struct principal
                             repetido = true;
                             cout << "Este livro já está cadastrado!" << endl;
                             cin.get();
