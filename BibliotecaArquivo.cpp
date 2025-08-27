@@ -19,7 +19,7 @@ int main(){
 
     int opcao, livros_cadastrados, busca, pos, i;
     string continuar;
-    bool repetido, encontrado, disponivel;
+    bool repetido, encontrado;
     
     i=0;
     livros_cadastrados=0;
@@ -35,7 +35,7 @@ int main(){
         cout << "7-Livros disponíveis" << endl;
         cout << "8-Listagem geral de livros" << endl;
         cout << "9-Sair" << endl;
-        cout << "────────────────────────────────" << endl;
+        cout << "────────────────────────────" << endl;
         cout << "Escolha uma opcão: ";
         cin >> opcao;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -53,16 +53,17 @@ int main(){
                 system("cls");
 
                 while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s") {
-                    cout << "────── CADASTRO ──────" << endl;
-                    cout << "Código de catalogação: ";
+                    cout << "─────────────── CADASTRO ───────────────" << endl;
+                    cout << "Digite o código do livro para cadastro: ";
                     cin >> cad.cod_catalogacao;
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                     repetido = false;
 
                     fseek(Biblioteca, 0, SEEK_SET); // vai pro início do arquivo
-                    struct cadastro temp;
-                    while (fread(&temp, sizeof(struct cadastro), 1, Biblioteca) == 1) {
+                    struct cadastro temp; // struct temporária
+                    while (!feof(Biblioteca)) {
+                        fread(&temp, sizeof(struct cadastro), 1, Biblioteca);
                         if (temp.cod_catalogacao == cad.cod_catalogacao) {
                             repetido = true;
                             cout << "Este livro já está cadastrado!" << endl;
@@ -70,6 +71,7 @@ int main(){
                             break;
                         }
                     }
+
                     if (repetido == false) { 
                         cout << "Área: ";
                         cin.get(cad.area, 99);
@@ -117,7 +119,7 @@ int main(){
             case 2:
                 do {
                     encontrado = false;
-                    cout << "────── ALTERAÇÃO ──────" << endl;
+                    cout << "─────────────── ALTERAÇÃO ───────────────" << endl;
                     cout << "Digite o código do livro para alteração: ";
                     cin >> busca;
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -165,7 +167,7 @@ int main(){
 
             case 3:
                 do {
-                    cout << "────── EXCLUSÃO ──────" << endl;
+                    cout << "─────────────── EXCLUSÃO ───────────────" << endl;
                     cout << "Digite o código do livro para exclusão: ";
                     cin >> busca;
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -197,8 +199,7 @@ int main(){
             case 4:
                 do {
                     encontrado = false;
-                    disponivel = false;
-                    cout << "────── EMPRÉSTIMO ──────" << endl;
+                    cout << "─────────────── EMPRÉSTIMO ───────────────" << endl;
                     cout << "Digite o código do livro para empréstimo: ";
                     cin >> busca;
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -210,7 +211,6 @@ int main(){
                         if (busca == cad.cod_catalogacao ) {
                             encontrado = true;
                             if (strcmp(cad.emp.usuario, "") == 0) { // verifica se o campo usuário está vazio
-                                disponivel = true;
                                 fseek (Biblioteca, sizeof(struct cadastro)*pos, SEEK_SET); // posiciona o cursor no começo do arquivo 
                                 cout << "Dt. Empréstimo: ";
                                 cin.get(cad.emp.dt_emprestimo, 9);
@@ -224,6 +224,9 @@ int main(){
                                 cout << "Empréstimo realizado com sucesso!" << endl;
                                 fwrite (&cad, sizeof(struct cadastro), 1, Biblioteca);
                                 break;
+                            } else {
+                                cout << "Livro indisponível para empréstimo." << endl;
+                                break;
                             }
                         }
                     }
@@ -231,10 +234,7 @@ int main(){
                     if (encontrado == false) {
                         cout << "Livro não encontrado." << endl;
                     }
-                    else if (disponivel == false) {
-                        cout << "Livro indisponível para empréstimo." << endl;
-                    }
-
+                   
                     fclose (Biblioteca);
                     cout << "Deseja realizar outro empréstimo? ";
                     cin >> continuar;
@@ -248,8 +248,7 @@ int main(){
             case 5:
                 do {
                     encontrado = false;
-                    disponivel = false;
-                    cout << "────── DEVOLUÇÃO ──────" << endl;
+                    cout << "─────────────── DEVOLUÇÃO ───────────────" << endl;
                     cout << "Digite o código do livro para devolução: ";
                     cin >> busca;
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -261,13 +260,15 @@ int main(){
                         if (busca == cad.cod_catalogacao ) {
                             encontrado = true;
                             if (strcmp(cad.emp.usuario, "") != 0) { // verifica se o campo usuário não esta vazio
-                                disponivel = true;  
                                 fseek (Biblioteca, sizeof(struct cadastro)*pos, SEEK_SET); // posiciona o cursor no começo do arquivo  
                                 strcpy(cad.emp.dt_emprestimo, ""); // limpa os campos de empréstimo
                                 strcpy(cad.emp.dt_devolucao, "");
                                 strcpy(cad.emp.usuario, "");
                                 cout << "Devolução realizada com sucesso!" << endl;
                                 fwrite (&cad, sizeof(struct cadastro), 1, Biblioteca);
+                                break;
+                            } else {
+                                cout << "Livro disponível para empréstimo." << endl; 
                                 break;
                             }
                         }
@@ -276,10 +277,7 @@ int main(){
                     if (encontrado == false) {
                         cout << "Livro não encontrado." << endl;
                     }
-                    else if (disponivel == false) {
-                        cout << "Livro disponível para empréstimo." << endl; 
-                    }
-
+                    
                     fclose (Biblioteca);
                     cout << "Deseja realizar outra devolução? ";
                     cin >> continuar;
@@ -292,21 +290,77 @@ int main(){
 
             case 6:
                 do {
+                    encontrado = false;
+                    cout << "─────────── CONSULTA DE LIVRO ──────────" << endl;
+                    cout << "Digite o código do livro para consulta: ";
+                    cin >> busca;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    Biblioteca = fopen ("Biblioteca.dat","rb");
+                    while (!feof(Biblioteca)) {
+                        fread(&cad, sizeof(struct cadastro), 1, Biblioteca);
+                        if (busca == cad.cod_catalogacao) {
+                            encontrado = true;
+
+                            if (strcmp(cad.emp.usuario, "") == 0) { // verifica se o campo usuário está vazio
+                                cout << "Status: Disponivel" << endl;
+                                cout << "Código de catalogação: " << cad.cod_catalogacao << endl;
+                                cout << "Área: " << cad.area << endl;
+                                cout << "Título: " << cad.titulo << endl;
+                                cout << "Autor(es): " << cad.autor << endl;
+                                cout << "Editora: " << cad.editora << endl;
+                                cout << "Nº de páginas: " << cad.num_paginas << endl;   
+                                break;
+                            } else {
+                                cout << "Status: Emprestado" << endl;
+                                cout << "Usuário: " << cad.emp.usuario << endl;                            
+                                cout << "Dt. Empréstimo: " << cad.emp.dt_emprestimo << endl;
+                                cout << "Dt. Devolução: " << cad.emp.dt_devolucao << endl;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (encontrado == false) {
+                        cout << "Livro não encontrado." << endl;
+                    }
+                    
+                    fclose (Biblioteca);
+                    cout << "Deseja consultar outro livro? ";
+                    cin >> continuar;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    system("cls");
                     
                 } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
 
             break;
 
             case 7:
-                do {
-                    
-                } while (continuar == "Sim" || continuar == "sim" || continuar == "SIM" || continuar == "S" || continuar == "s");
+                cout << "────────── LIVROS DISPONÍVEIS ──────────" << endl;
+                Biblioteca = fopen ("Biblioteca.dat","rb");
+                
+                while (!feof(Biblioteca)) {
+                    fread (&cad, sizeof(struct cadastro), 1, Biblioteca);
+                    if (strcmp(cad.emp.usuario, "") == 0) { // verifica se o campo usuário está vazio
+                                cout << "Status: Disponivel" << endl;
+                                cout << "Código de catalogação: " << cad.cod_catalogacao << endl;
+                                cout << "Área: " << cad.area << endl;
+                                cout << "Título: " << cad.titulo << endl;
+                                cout << "Autor(es): " << cad.autor << endl;
+                                cout << "Editora: " << cad.editora << endl;
+                                cout << "Nº de páginas: " << cad.num_paginas << endl;  
+                                cout << "────────────────────────────────────────" << endl;
+                            }
+                        }
+
+                cin.get();
+                system("cls");      
+                fclose (Biblioteca);
 
             break;
 
             case 8:
                 Biblioteca = fopen("Biblioteca.dat", "rb");
-                cout << "────── LISTAGEM GERAL DE LIVROS ──────" << endl;
+                cout << "─────── LISTAGEM GERAL DE LIVROS ───────" << endl;
 
                 fread (&cad, sizeof(struct cadastro), 1, Biblioteca);
                     while (!feof(Biblioteca)) {
@@ -316,7 +370,7 @@ int main(){
                             cout << "Autor(es): " << cad.autor << endl;
                             cout << "Editora: " << cad.editora << endl;
                             cout << "Nº de páginas: " << cad.num_paginas << endl;   
-                            cout << "──────────────────────────────────────" << endl;  
+                            cout << "────────────────────────────────────────" << endl;  
                             fread (&cad, sizeof(struct cadastro), 1, Biblioteca); 
                     }
 
