@@ -289,7 +289,7 @@ int main(){
 
             break;
 
-            case 6:
+            case 6: 
                 do {
                     encontrado = false;
                     cout << "─────────── CONSULTA DE LIVRO ──────────" << endl;
@@ -339,8 +339,9 @@ int main(){
                 cout << "────────── LIVROS DISPONÍVEIS ──────────" << endl;
                 Biblioteca = fopen ("Biblioteca.dat","rb");
                 
-                while (!feof(Biblioteca)) {
-                    fread (&cad, sizeof(struct cadastro), 1, Biblioteca);
+                
+                    while (fread (&cad, sizeof(struct cadastro), 1, Biblioteca) == 1){
+                    
                     if (strcmp(cad.emp.usuario, "") == 0) { // verifica se o campo usuário está vazio
                                 cout << "Status: Disponivel" << endl;
                                 cout << "Código de catalogação: " << cad.cod_catalogacao << endl;
