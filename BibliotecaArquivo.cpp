@@ -18,12 +18,9 @@ int main(){
     } ;
     struct cadastro cad;
 
-    int opcao, livros_cadastrados, busca, pos, i;
+    int opcao, busca, pos;
     string continuar;
     bool repetido, encontrado;
-    
-    i=0;
-    livros_cadastrados=0;
 
     do {
         cout << "MENU DE OPÇÕES DA BIBLIOTECA" << endl;
@@ -94,9 +91,6 @@ int main(){
                         strcpy(cad.emp.dt_emprestimo, "");
                         strcpy(cad.emp.dt_devolucao, "");
                         strcpy(cad.emp.usuario, "");
-                        
-                        i++;
-                        livros_cadastrados++;
                         
                     if (fwrite(&cad, sizeof(struct cadastro), 1, Biblioteca) == 1) { 
                         cout << "Registro gravado com sucesso!";
@@ -339,9 +333,7 @@ int main(){
                 cout << "────────── LIVROS DISPONÍVEIS ──────────" << endl;
                 Biblioteca = fopen ("Biblioteca.dat","rb");
                 
-                
                     while (fread (&cad, sizeof(struct cadastro), 1, Biblioteca) == 1){
-                    
                     if (strcmp(cad.emp.usuario, "") == 0) { // verifica se o campo usuário está vazio
                                 cout << "Status: Disponivel" << endl;
                                 cout << "Código de catalogação: " << cad.cod_catalogacao << endl;
